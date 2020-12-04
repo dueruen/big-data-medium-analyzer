@@ -90,7 +90,7 @@ $ /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.propertie
 And start the kafka brokers
 ```bash
 $ su kafka
-$ bin/kafka-server-start.sh config/server.properties
+$ /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 ```
 
 ## Test the setup
