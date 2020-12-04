@@ -85,12 +85,16 @@ Start zookeeper, on all machines
 ```bash
 $ su kafka
 $ /opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+% or
+$ /opt/kafka/bin/zookeeper-server-start.sh -daemon /opt/kafka/config/zookeeper.properties
 ```
 
 And start the kafka brokers
 ```bash
 $ su kafka
 $ /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+% or
+$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server.properties
 ```
 
 ## Test the setup
