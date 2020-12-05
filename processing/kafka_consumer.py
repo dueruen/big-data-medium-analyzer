@@ -1,11 +1,14 @@
+# Start
+# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.2.3,org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.3 kafka_consumer.py
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import LongType, DoubleType, IntegerType, StringType, BooleanType, BinaryType, DateType
 from pyspark.sql import SparkSession
 
 # Config
-bootstrap_servers = '10.123.252.213:9092'
-kafka_topic_name = 'test'
+bootstrap_servers = "10.123.252.213:9092"
+kafka_topic_name = "test"
 
 # Make a Spark Session
 spark = SparkSession \
@@ -28,13 +31,17 @@ schema = StructType([
 ])
 
 # Subscribe to kafka to get a Spark DataFrame
-article_df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", bootstrap_servers) \
+df = spark \
+  .readStream \
+  .format("kafka") \
+  .option("kafka.bootstrap.servers", bootstrap_servers) \
   .option("subscribe", kafka_topic_name) \
   .load()
+df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
-words = article_df.select(
+words = df.select(
    explode(
-       split(article_df.value, " ")
+       split(df.value, " ")
    ).alias("word")
 )
 
