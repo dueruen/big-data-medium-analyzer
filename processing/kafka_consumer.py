@@ -1,5 +1,5 @@
-# Start
-# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.2.3,org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.3 kafka_consumer.py
+# Start 
+# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
 
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
