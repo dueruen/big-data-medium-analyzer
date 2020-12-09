@@ -122,3 +122,9 @@ Assuming the command is run from master-node
   --topic test \
   --from-beginning
 ```
+
+# Commands to remember
+List topics
+```bash
+$ /opt/kafka/bin/kafka-topics.sh --list --zookeeper 0.0.0.0:2181
+```

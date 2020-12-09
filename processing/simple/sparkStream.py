@@ -1,4 +1,4 @@
-# Simple experiment
+# Simple experiment using directdirect
 
 import sys
 from pyspark import SparkContext
