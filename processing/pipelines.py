@@ -3,15 +3,20 @@ import base64
 import io
 import cv2
 import numpy as np
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
 
-def preprocessing_pipeline(article_df):
-  df = preprocess_image_pipeline(article_df)
+preprocess_image_udf_schema = StructType([
+  IntegerType(),
+  IntegerType(),
+  IntegerType(),
+  ArrayType(IntegerType()),
+  ArrayType(IntegerType())
+])
+preprocess_image_udf = udf(lambda base64_image: preprocess_image_pipeline(base64_image), preprocess_image_udf_schema)
 
-  return df
-
-def preprocess_image_pipeline(article_df):
-  b64_string = article_df.decode()
-  image = imageio.imread(io.BytesIO(base64.b64decode(b64_string)))
+def preprocess_image_pipeline(base64_image):
+  image = imageio.imread(io.BytesIO(base64.b64decode(base64_image)))
 
   image_pixel_height = image.shape[0]
   image_pixel_width = image.shape[1]
@@ -19,12 +24,12 @@ def preprocess_image_pipeline(article_df):
   image_average_pixel_color = image.mean(axis=0).mean(axis=0)
   image_dominant_pixel_color = cal_dominant_color(image)
 
-  article_df.withColumn("image_pixel_height", image_pixel_height) \
-    .withColumn("image_pixel_width", image_pixel_width) \
-    .withColumn("image_size", image_size) \
-    .withColumn("image_average_pixel_color", image_average_pixel_color) \
-    .withColumn("image_dominant_pixel_color", image_dominant_pixel_color)
-  return article_df
+  # article_df.withColumn("image_pixel_height", image_pixel_height) \
+  #   .withColumn("image_pixel_width", image_pixel_width) \
+  #   .withColumn("image_size", image_size) \
+  #   .withColumn("image_average_pixel_color", image_average_pixel_color) \
+  #   .withColumn("image_dominant_pixel_color", image_dominant_pixel_color)
+  return image_pixel_height, image_pixel_width, image_size, image_average_pixel_color, image_dominant_pixel_color
 
 def cal_dominant_color(img):
   # Calculate the dominant pixel color using k-means clustering

@@ -2,7 +2,6 @@ import imageio
 import base64
 import io
 import cv2
-import cv2 
 import numpy as np
 
 filename = "1.png"
@@ -16,13 +15,17 @@ img = imageio.imread(io.BytesIO(base64.b64decode(b64_string)))
 
 print('Type of the image : ' , type(img)) 
 print('Shape of the image : {}'.format(img.shape)) 
-print('Image Hight {}'.format(img.shape[0])) 
+print('Image Height {}'.format(img.shape[0])) 
 print('Image Width {}'.format(img.shape[1])) 
 print('Dimension of Image {}'.format(img.ndim))
 
 print('Image size {}'.format(img.size)) 
 
-print(img.mean(axis=0).mean(axis=0))
+r = img.mean(axis=0).mean(axis=0)
+print(r)
+print(r[0])
+h = '#%02x%02x%02x' % (int(r[0]), int(r[1]), int(r[2]))
+print(h)
 
 pixels = np.float32(img.reshape(-1, 3))
 
