@@ -1,8 +1,11 @@
-import imageio
+# import imageio
 import base64
 import io
-import cv2
+import cv2 as cv2
 import numpy as np
+import skimage
+from skimage import io as sio
+
 
 filename = "1.png"
 with open(filename, "rb") as fid:
@@ -11,7 +14,8 @@ with open(filename, "rb") as fid:
 b64_bytes = base64.b64encode(data)
 b64_string = b64_bytes.decode()
 
-img = imageio.imread(io.BytesIO(base64.b64decode(b64_string)))
+# img = imageio.imread(io.BytesIO(base64.b64decode(b64_string)))
+img = sio.imread(io.BytesIO(base64.b64decode(b64_string)))
 
 print('Type of the image : ' , type(img)) 
 print('Shape of the image : {}'.format(img.shape)) 
@@ -26,8 +30,10 @@ print(r)
 print(r[0])
 h = '#%02x%02x%02x' % (int(r[0]), int(r[1]), int(r[2]))
 print(h)
-
+print(img)
+print(img.reshape(-1, 3))
 pixels = np.float32(img.reshape(-1, 3))
+print(pixels)
 
 n_colors = 5
 criteria = (cv2.TermCriteria_EPS + cv2.TermCriteria_MAX_ITER, 200, .1)
