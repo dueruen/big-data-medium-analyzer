@@ -2,7 +2,6 @@
 # /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
 # /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 /home/hadoop/tests/kafka_test_consumer.py
 # /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 --py-files /home/hadoop/tests/kafka_test_consumer.py,/home/hadoop/tests/pipelines.py
-
 # /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 --py-files /home/hadoop/big-data-medium-analyzer/processing/pipelines.py /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
 
 from pyspark.sql.functions import *
@@ -77,7 +76,7 @@ df = df.withColumn("res", image_udf(col("image"))) \
 ##
 # Preporcess title and subtitle
 ##
-keywords = ["net neutrality", "big data", "data mining", "actionable analytics", "ai", "artificial intelligence", "ml", "machine learning", "neural network", "nl" "personalization", "startup", "automate", "serverless" "voice recognition", "chatbots", "augmented reality", "ar", "virtual reality", "vr", "robot", "industry 4.0", "internet of things", "iot", "quantum", "blockchain", "ecosystem", "smart", "legacy", "crypto", "futureware", "disruption", "disrupt", "agile", "unicorn", "algorithm", "backdoor", "bug", "cybersecurity", "data lake", "deepfake", "deep learning", "dl", "encryption", "saas", "paas", "iaas", "cloud", "next gen", "hack"]
+keywords = ["net neutrality", "big data", "data mining", "actionable analytics", "ai", "artificial intelligence", "ml", "machine learning", "neural network", "nl", "information retrieval", "personalization", "startup", "automate", "serverless", "voice recognition", "chatbots", "augmented reality", "ar", "virtual reality", "vr", "robot", "industry 4.0", "internet of things", "iot", "quantum", "blockchain", "ecosystem", "smart", "legacy", "crypto", "futureware", "disruption", "disrupt", "agile", "unicorn", "algorithm", "backdoor", "bug", "cybersecurity", "data lake", "deepfake", "deep learning", "dl", "encryption", "saas", "paas", "iaas", "cloud", "next gen", "hack"]
 
 typewords = ["hands on", "hands-on" "how to", "deep dive", "easy", "hard", "guide", "advanced", "101", "beginner", "intermediate", "expert", "method", "strategi", "introduction"]
 
@@ -105,10 +104,10 @@ df = df.withColumn("res", title_udf(col("title"))) \
     .drop("res")
 
 df = df.withColumn("res", title_udf(col("subtitle"))) \
-    .withColumn("title_len", col("res").getItem(0)) \
-    .withColumn("title_words", col("res").getItem(1)) \
-    .withColumn("title_type_words", col("res").getItem(2)) \
-    .withColumn("title_key_words", col("res").getItem(3)) \
+    .withColumn("subtitle_len", col("res").getItem(0)) \
+    .withColumn("subtitle_words", col("res").getItem(1)) \
+    .withColumn("subtitle_type_words", col("res").getItem(2)) \
+    .withColumn("subtitle_key_words", col("res").getItem(3)) \
     .drop("res")
 
 query = df \
