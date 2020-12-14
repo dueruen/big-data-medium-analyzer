@@ -81,6 +81,21 @@ zookeeper.connection.timeout.ms=18000
 group.initial.rebalance.delay.ms=0
 ```
 
+Increase message size:
+In `kafka/config/server.properties` add/change:
+```
+message.max.bytes=15728640
+replica.fetch.max.bytes=15728640
+```
+In `kafka/config/producer.properties` add/change:
+```
+max.request.size=15728640
+```
+In `kafka/config/consumer.properties` add/change:
+```
+fetch.message.max.bytes=15728640
+```
+
 Start zookeeper, on all machines
 ```bash
 $ su kafka
@@ -127,4 +142,10 @@ Assuming the command is run from master-node
 List topics
 ```bash
 $ /opt/kafka/bin/kafka-topics.sh --list --zookeeper 0.0.0.0:2181
+```
+
+# stop servers
+```bash
+$ sudo /opt/kafka/bin/kafka-server-stop.sh
+$ sudo /opt/kafka/bin/zookeeper-server-stop.sh
 ```

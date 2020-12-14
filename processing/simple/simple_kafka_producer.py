@@ -14,7 +14,7 @@ data_encoding = 'utf-8'
 client = KafkaClient(bootstrap_servers)
 topic = client.topics[kafka_topic_name]
 
-filename = "./tests/1.png"
+filename = "./tests/2.png"
 with open(filename, "rb") as fid:
     data = fid.read()
 
@@ -25,8 +25,7 @@ data_set = {"id": 1, "url": "url", "title": "this is a title, robot, ai, beginne
 json_dump = json.dumps(data_set)
 print(json_dump)
 
-with topic.get_sync_producer() as producer:
+with topic.get_sync_producer(max_request_size = 15728640) as producer:
     producer.produce(bytes(json_dump, data_encoding))
 
 print("DONE")
-
