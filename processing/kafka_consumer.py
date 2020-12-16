@@ -51,7 +51,7 @@ raw_df = spark \
 
 df = raw_df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING) as json") \
     .withColumn("article", from_json(col("json"), schema)) \
-    .selectExpr("article.id as id", "article.url as url", "article.title as title", "article.subtitle as subtitle", "article.image as image", "article.claps as claps", "article.responses as responses", "article.reading_time as reading_time",  "article.publication as publication", "article.date as date_str")
+    .selectExpr("article.id as id", "article.url as url", "article.title as title", "article.subtitle as subtitle", "article.image as image", "article.claps as claps", "article.responses as responses", "article.reading_time as reading_time",  "article.publication as publication_str", "article.date as date_str")
 
 ##
 # Preprocess image
@@ -113,16 +113,39 @@ df = df.withColumn("res", title_udf(col("subtitle"))) \
     .withColumn("subtitle_key_words", col("res").getItem(3)) \
     .drop("res")
 
+##
+# Map publication
+##
+publication_options = {
+    "None" : 0,
+    "Towards Data Science" : 1,
+    "UX Collective" : 2,
+    "The Startup" : 3,
+    "The Writing Cooperative" : 4,
+    "Data Driven Investor" : 5,
+    "Better Humans" : 6,
+    "Better Marketing" : 7,
+}
+
+def map_publication(publication):
+    return publication_options.get(publication, 0)
+
+publication_options_udf = udf(lambda publication: map_publication(publication), ArrayType(IntegerType()))
+
+df = df.withColumn("publication", publication_options_udf(col("publication_str"))) \
+    .drop("publication_str")
+
+
 ###
 # Write dataframe to hive
 ###
-def processRow(d, epochId):
-    d.write.saveAsTable(name='articles', format='hive', mode='append')
+# def processRow(d, epochId):
+#     d.write.saveAsTable(name='articles', format='hive', mode='append')
 
-query = df \
-    .writeStream \
-    .foreachBatch(processRow) \
-    .start() \
+# query = df \
+#     .writeStream \
+#     .foreachBatch(processRow) \
+#     .start() \
 
 ###
 # Write to console 
