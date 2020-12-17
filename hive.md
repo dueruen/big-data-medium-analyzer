@@ -19,3 +19,17 @@ CREATE TABLE IF NOT EXISTS articles ( id int, url String, title String, subtitle
 > LINES TERMINATED BY '\n'
 > STORED AS TEXTFILE;
 ```
+
+
+LINKS DER ER BRUGT
+http://www.hadooplessons.info/2017/12/dynami-service-discovery-in-hive-using-zookeeper.html
+https://cwiki.apache.org/confluence/display/Hive/AdminManual+Metastore+3.0+Administration#AdminManualMetastore3.0Administration-Option2:ExternalRDBMS
+https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-ConnectionURLWhenZooKeeperServiceDiscoveryIsEnabled
+https://cwiki.apache.org/confluence/display/Hive/GettingStarted#GettingStarted-SimpleExampleUseCases
+https://acadgild.com/blog/connect-hive-with-beeline-hive-installation-with-mysql-metastore
+https://www.geeksforgeeks.org/apache-hive-installation-and-configuring-mysql-metastore-for-hive/
+https://www.bbsmax.com/A/qVdeeMOpdP/
+https://kontext.tech/column/hadoop/303/hiveserver2-cannot-connect-to-hive-metastore-resolutionsworkarounds
+https://sparkbyexamples.com/apache-hive/hive-start-hiveserver2-and-beeline/
+https://github.com/PacktPublishing/Hadoop-2.x-Administration-Cookbook/blob/master/Chapter07/ch7_recipes.txt
+https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781787126732/7/ch07lvl1sec80/operating-hive-with-zookeeper
