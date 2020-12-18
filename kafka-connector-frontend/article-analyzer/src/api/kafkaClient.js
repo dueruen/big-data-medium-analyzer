@@ -21,16 +21,21 @@ export const publishNewArticle = async(articleData) => {
         const b64 = stringSplit[1]
         
         await producer.connect()
+        .catch(e => {
+            console.log(e)
+        })
         await producer.send({
           topic: AnalyzingTopic,
           messages: [
-            { 
+            {
+                value: { 
                 title: articleData.title,
                 subtitle: articleData.subtitle,
                 readingTime: articleData.readingTime,
                 publication: articleData.publication,
                 image: b64
             },
+        },
           ],
         })
       }   
