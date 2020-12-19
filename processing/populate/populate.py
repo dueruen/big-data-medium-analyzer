@@ -22,10 +22,13 @@ def readFile(filePath):
 
 count = 0
 with open('data/medium_data.csv', newline='') as csvfile:
-  spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+  spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
   for row in spamreader:
     if count == 0:
       count += 1
+      continue
+
+    if not row[4]:
       continue
 
     b64_string = readFile(f'./data/images/{row[4]}')
@@ -36,7 +39,7 @@ with open('data/medium_data.csv', newline='') as csvfile:
       "url": row[1], 
       "title": row[2], 
       "subtitle": row[3], 
-      "image": "test-base64", #b64_string 
+      "image": "b64_string",
       "claps": row[5], 
       "responses": row[6], 
       "reading_time": row[7], 
