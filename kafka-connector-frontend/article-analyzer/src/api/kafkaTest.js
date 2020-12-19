@@ -9,6 +9,7 @@ const kafka = new Kafka({
 const AnalyzingTopic = "grammefars_test"
 const producer = kafka.producer()
 
+const helloKafka = async() => { 
 await producer.connect()
     .catch(e => {
         console.log(e)
@@ -22,4 +23,5 @@ await producer.connect()
     .catch(e => { 
         console.log(e)
     })
+}
     
