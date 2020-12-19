@@ -1,2 +1,3 @@
 **.txt
-**data/
+**/populate/data/
+**__pycache__

@@ -303,6 +303,10 @@ CREATE TABLE IF NOT EXISTS articles ( id int, url String, title String, subtitle
 > STORED AS TEXTFILE;
 ```
 
+`!connect jdbc:hive2://node-master:2181,node1:2181,node2:2181;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+
+show running java apps `jps`
+kill java tasks `pkill -9 -f RunJar`
 
 ## References
 - http://www.hadooplessons.info/2017/12/dynami-service-discovery-in-hive-using-zookeeper.html
