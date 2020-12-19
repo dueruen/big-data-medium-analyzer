@@ -42,14 +42,13 @@ const useArticleAnalyzer = (callback) => {
 const ArticleAnalyzer = () => {
 
     const analyzeArticle = () => {
-/*        publishNewArticle({
+        testKafka({
             title: inputs.title, 
             subtitle: inputs.subtitle,
             readingTime: inputs.readingTime,
             publication: inputs.publication,
             articlePicture:  articlePicture.articlePicture
-        }) */
-        testKafka()
+        })
     }
 
     const {inputs, articlePicture, handleInputChange, handleSubmit} = useArticleAnalyzer(analyzeArticle);
