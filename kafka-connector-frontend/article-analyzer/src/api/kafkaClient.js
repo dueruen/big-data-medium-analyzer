@@ -1,10 +1,7 @@
 const { Kafka } = require('kafkajs')
 
-const kafka = new Kafka({
-    clientId: 'article-analyzer',
-    ssl: true,
-    brokers: ['10.123.252.211:9092', '10.123.252.212:9092', '10.123.252.213:9092']
-  })
+const config = require('./config/kafkaConnection')
+const kafka = new Kafka(config)
 
 const AnalyzingTopic = "grammefars_test"
 const producer = kafka.producer()
@@ -21,6 +18,14 @@ export const publishNewArticle = async(articleData) => {
         const stringSplit = b64WithMeta.split(",")
         const b64 = stringSplit[1]
         
+        const message = { 
+            title: articleData.title,
+            subtitle: articleData.subtitle,
+            readingTime: articleData.readingTime,
+            publication: articleData.publication,
+            image: b64
+        }
+
         await producer.connect()
         .catch(e => {
             console.log(e)
@@ -29,14 +34,8 @@ export const publishNewArticle = async(articleData) => {
           topic: AnalyzingTopic,
           messages: [
             {
-                value: { 
-                title: articleData.title,
-                subtitle: articleData.subtitle,
-                readingTime: articleData.readingTime,
-                publication: articleData.publication,
-                image: b64
-            },
-        },
+                value: JSON.stringify(message)
+            }
           ],
         })
         .catch(e => { 

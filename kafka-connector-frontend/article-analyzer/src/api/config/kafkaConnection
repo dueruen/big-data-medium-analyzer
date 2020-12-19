@@ -1,0 +1,8 @@
+module.exports = {
+clientId: 'article-analyzer-frontend',
+kafka_topic: 'grammefars_test',
+brokers: ['10.123.252.211:9092', '10.123.252.212:9092', '10.123.252.213:9092'],
+connectionTimeout: 3000,
+authenticationTimeout: 1000,
+reauthenticationThreshold: 10000,
+};

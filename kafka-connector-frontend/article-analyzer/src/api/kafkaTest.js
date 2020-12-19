@@ -2,7 +2,6 @@ const { Kafka } = require('kafkajs')
 
 const kafka = new Kafka({
     clientId: 'article-analyzer',
-    ssl: true,
     brokers: ['10.123.252.211:9092', '10.123.252.212:9092', '10.123.252.213:9092']
   })
 
