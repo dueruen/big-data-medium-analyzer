@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {publishNewArticle} from '../../api/kafkaClient'
+import {publishNewArticle, testKafka} from '../../api/kafkaClient'
 import './articleAnalyzer.css'
 
 const useArticleAnalyzer = (callback) => {
@@ -42,13 +42,14 @@ const useArticleAnalyzer = (callback) => {
 const ArticleAnalyzer = () => {
 
     const analyzeArticle = () => {
-        publishNewArticle({
+/*        publishNewArticle({
             title: inputs.title, 
             subtitle: inputs.subtitle,
             readingTime: inputs.readingTime,
             publication: inputs.publication,
             articlePicture:  articlePicture.articlePicture
-        })
+        }) */
+        testKafka()
     }
 
     const {inputs, articlePicture, handleInputChange, handleSubmit} = useArticleAnalyzer(analyzeArticle);
