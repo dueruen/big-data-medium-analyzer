@@ -11,7 +11,7 @@ from skimage import io as sio
 import pipelines
 
 # Config
-bootstrap_servers = "10.123.252.211:9092,10.123.252.212:9092,10.123.252.213:9092"
+bootstrap_servers = "node-master:9092,node1:9092,node2:9092"
 kafka_topic_name = "test_json"
 
 # Make a Spark Session
@@ -19,7 +19,7 @@ spark = SparkSession \
     .builder \
     .appName("Real time Medium analyzer") \
     .config("spark.sql.warehouse.dir", "/user/hive/warehouse") \
-    .config("hive.metastore.uris", "thrift://master-node:9083,thrift://node1:9083,thrift://node2:9083") \
+    .config("hive.metastore.uris", "thrift://node-master:9083,thrift://node1:9083,thrift://node2:9083") \
     .enableHiveSupport() \
     .getOrCreate()
 
@@ -73,7 +73,7 @@ modelPath = "./claps_model"
 
 loadedPipelineModel = PipelineModel.load(modelPath)
 df = loadedPipelineModel.transform(df)
-df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
+#df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
 
 ###
 # Write dataframe to hive
