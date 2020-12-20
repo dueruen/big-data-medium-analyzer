@@ -296,14 +296,15 @@ Hive url
 
 Create table
 ```
-CREATE TABLE IF NOT EXISTS articles ( id int, url String, title String, subtitle String, image String, claps int, responses int, reading_time int, publication int, date_str String, image_pixel_height int, image_pixel_width int, image_size int, image_average_pixel_color_r int, image_average_pixel_color_g int, image_average_pixel_color_b int, title_len int, title_words int, title_type_words int, title_key_words int, subtitle_len int, subtitle_words int, subtitle_type_words int, subtitle_key_words int)
+CREATE TABLE IF NOT EXISTS articles ( id int, url String, title String, subtitle String, image String, claps int, responses int, reading_time int, publication_str String, date_str String, image_pixel_height int, image_pixel_width int, image_size int, image_average_pixel_color_r int, image_average_pixel_color_g int, image_average_pixel_color_b int, title_len int, title_words int, title_type_words int, title_key_words int, subtitle_len int, subtitle_words int, subtitle_type_words int, subtitle_key_words int)
 > ROW FORMAT DELIMITED
 > FIELDS TERMINATED BY '\t'
 > LINES TERMINATED BY '\n'
 > STORED AS TEXTFILE;
 ```
 
-`!connect jdbc:hive2://node-master:2181,node1:2181,node2:2181;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
+List port use
+`netstat -tulpn | grep LISTEN`
 
 show running java apps `jps`
 kill java tasks `pkill -9 -f RunJar`
@@ -324,4 +325,3 @@ kill java tasks `pkill -9 -f RunJar`
 - https://dzone.com/articles/how-configure-mysql-metastore 
 - https://medium.com/@divingwai/installing-hive-with-external-mysql-58a958ff1692
 - https://phoenixnap.com/kb/install-hive-on-ubuntu
-

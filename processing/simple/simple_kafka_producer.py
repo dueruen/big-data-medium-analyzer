@@ -21,7 +21,7 @@ with open(filename, "rb") as fid:
 b64_bytes = base64.b64encode(data)
 b64_string = b64_bytes.decode()
 
-data_set = {"id": 1, "url": "url", "title": "this is a title, robot, ai, beginner", "subtitle": "this is a subtitle, startup, startup nl, beginner, how to, beginner", "image": b64_string, "claps": 2, "responses": 3, "reading_time": 4, "publication": "publication", "date": "dateData"}
+data_set = {"id": 1, "url": "url", "title": "this is a title, robot, ai, beginner", "subtitle": "this is a subtitle, startup, startup nl, beginner, how to, beginner", "image": b64_string, "claps": 2, "responses": 3, "reading_time": 4, "publication": "Towards Data Science", "date": "dateData"}
 json_dump = json.dumps(data_set)
 print(json_dump)
 

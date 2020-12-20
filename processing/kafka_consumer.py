@@ -1,9 +1,3 @@
-# Start
-# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
-# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 /home/hadoop/tests/kafka_test_consumer.py
-# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 --py-files /home/hadoop/tests/kafka_test_consumer.py,/home/hadoop/tests/pipelines.py
-# /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 --py-files /home/hadoop/big-data-medium-analyzer/processing/pipelines.py /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
-
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import ArrayType, LongType, DoubleType, IntegerType, StringType, BooleanType, BinaryType, DateType
@@ -21,18 +15,19 @@ bootstrap_servers = "10.123.252.211:9092,10.123.252.212:9092,10.123.252.213:9092
 kafka_topic_name = "test_json"
 
 # Make a Spark Session
-# spark = SparkSession \
-#     .builder \
-#     .appName("Real time Medium analyzer") \
-#     .config("spark.sql.warehouse.dir", "/user/hive/warehouse") \
-#     .config("hive.metastore.uris", "thrift://localhost:9083") \
-#     .enableHiveSupport() \
-#     .getOrCreate()
-
 spark = SparkSession \
     .builder \
     .appName("Real time Medium analyzer") \
+    .config("spark.sql.warehouse.dir", "/user/hive/warehouse") \
+    .config("hive.metastore.uris", "thrift://master-node:9083,thrift://node1:9083,thrift://node2:9083") \
+    .enableHiveSupport() \
     .getOrCreate()
+
+# Run without hive
+# spark = SparkSession \
+#     .builder \
+#     .appName("Real time Medium analyzer") \
+#     .getOrCreate()
 
 # Define the Schema
 schema = StructType([
@@ -63,7 +58,13 @@ df = raw_df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING) as json") \
 ##
 # Preprocess dataframe
 ##
-df_preprocessed = pipelines.preporcess(df)
+df = pipelines.preporcess(df)
+
+query = df \
+    .writeStream \
+    .outputMode("append") \
+    .format("console") \
+    .start()
 
 ##
 # Predict claps
@@ -71,24 +72,24 @@ df_preprocessed = pipelines.preporcess(df)
 modelPath = "./claps_model"
 
 loadedPipelineModel = PipelineModel.load(modelPath)
-test_reloadedModel = loadedPipelineModel.transform(df_preprocessed)
-test_reloadedModel.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
+df = loadedPipelineModel.transform(df)
+df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
 
 ###
 # Write dataframe to hive
 ###
-# def processRow(d, epochId):
-#     d.write.saveAsTable(name='articles', format='hive', mode='append')
+def processRow(d, epochId):
+    d.write.saveAsTable(name='articles', format='hive', mode='append')
 
-# query = df \
-#     .writeStream \
-#     .foreachBatch(processRow) \
-#     .start() \
+query = df \
+    .writeStream \
+    .foreachBatch(processRow) \
+    .start() \
 
 ###
 # Write to console 
 ###
-query = df_preprocessed \
+query = df \
     .writeStream \
     .outputMode("append") \
     .format("console") \
