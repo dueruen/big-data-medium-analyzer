@@ -15,3 +15,5 @@ $ /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafk
 % or with more files
 $ /home/hadoop/spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.6 --py-files /home/hadoop/big-data-medium-analyzer/processing/pipelines.py /home/hadoop/big-data-medium-analyzer/processing/kafka_consumer.py
 ```
+
+/home/hadoop/spark/bin/spark-submit --py-files /home/hadoop/big-data-medium-analyzer/processing/pipelines.py /home/hadoop/big-data-medium-analyzer/processing/spark_pop.py
