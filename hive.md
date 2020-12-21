@@ -305,6 +305,9 @@ tblproperties("skip.header.line.count"="1")
 ;
 ```
 
+### List port use
+`netstat -tulpn | grep LISTEN`
+
 ### Load data from hdfs into hive table
 ```
 beeline $ > load data inpath 'pre_data.csv' into table articles;
@@ -330,4 +333,3 @@ kill java tasks `pkill -9 -f RunJar`
 - https://dzone.com/articles/how-configure-mysql-metastore 
 - https://medium.com/@divingwai/installing-hive-with-external-mysql-58a958ff1692
 - https://phoenixnap.com/kb/install-hive-on-ubuntu
-

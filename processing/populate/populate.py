@@ -21,13 +21,18 @@ def readFile(filePath):
     return b64_bytes.decode()
 
 count = 0
-with open('data/medium_data.csv', newline='') as csvfile:
+with open('data/working_medium_data.csv', newline='') as csvfile:
   spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
   for row in spamreader:
     if count == 0:
       count += 1
       continue
+    
+    # Wrong row length
+    if len(row) != 10:
+      continue
 
+    # Not image name
     if not row[4]:
       continue
 

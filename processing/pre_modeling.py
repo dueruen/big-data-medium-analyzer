@@ -65,20 +65,25 @@ with open('./populate/data/working_medium_data.csv', newline='') as csvfile:
 
     # Image data not process correctly
     if isinstance(image_data, bool):
+      print("image_Data false ")
+      print(row)
       continue
 
     # Wrong image data length
     if len(image_data) != 6:
+      print("image_Data not 6 ")
+      print(row)
       continue
 
     data.append((int(float(row[0])), row[1], row[2], row[3], "b64_string", int(float(row[5])), int(float(row[6])), int(float(row[7])), row[8], row[9], image_data[0], image_data[1], image_data[2], image_data[3], image_data[4], image_data[5]))
     
     count+= 1
     # Control data amount 
-    # if count == 2:
-    #   break
+    if count == 9:
+      break
 
 df = spark.createDataFrame(data,schema)
+df.show()
 
 print(df.count())
 
@@ -180,5 +185,5 @@ print(evaluator.evaluate(predictions,
    {evaluator.metricName: 'areaUnderPR'}))
 
 # Save model
-modelPath = "./claps_model"
-pipelineModel.write().overwrite().save(modelPath)
+# modelPath = "./claps_model"
+# pipelineModel.write().overwrite().save(modelPath)

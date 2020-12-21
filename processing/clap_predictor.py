@@ -7,6 +7,7 @@ from pyspark.ml import PipelineModel
 import base64
 import io
 from skimage import io as sio
+import uuid
 
 import pipelines
 
@@ -17,30 +18,19 @@ kafka_topic_name = "test_json"
 # Make a Spark Session
 spark = SparkSession \
     .builder \
-    .appName("Real time Medium analyzer") \
+    .appName("Medium clap predictor") \
     .config("spark.sql.warehouse.dir", "/user/hive/warehouse") \
     .config("hive.metastore.uris", "thrift://node-master:9083,thrift://node1:9083,thrift://node2:9083") \
     .enableHiveSupport() \
     .getOrCreate()
 
-# Run without hive
-# spark = SparkSession \
-#     .builder \
-#     .appName("Real time Medium analyzer") \
-#     .getOrCreate()
-
 # Define the Schema
 schema = StructType([
-    StructField("id", IntegerType()),
-    StructField("url", StringType()),
     StructField("title", StringType()),
     StructField("subtitle", StringType()),
     StructField("image", StringType()),
-    StructField("claps", IntegerType()),
-    StructField("responses", IntegerType()),
     StructField("reading_time", IntegerType()),
-    StructField("publication", StringType()),
-    StructField("date", StringType())
+    StructField("publication", StringType())
 ])
 
 # Subscribe to kafka to get a Spark DataFrame
@@ -53,33 +43,39 @@ raw_df = spark \
 
 df = raw_df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING) as json") \
     .withColumn("article", from_json(col("json"), schema)) \
-    .selectExpr("article.id as id", "article.url as url", "article.title as title", "article.subtitle as subtitle", "article.image as image", "article.claps as claps", "article.responses as responses", "article.reading_time as reading_time",  "article.publication as publication_str", "article.date as date_str")
+    .selectExpr("article.title as title", "article.subtitle as subtitle", "article.image as image", "article.reading_time as reading_time",  "article.publication as publication_str")
 
 ##
 # Preprocess dataframe
 ##
 df = pipelines.preporcess(df)
 
-query = df \
+##
+# Predict claps
+##
+# Add label
+df = df.withColumn("claps", lit(1))
+modelPath = "./claps_model"
+
+loadedPipelineModel = PipelineModel.load(modelPath)
+prediction_df = loadedPipelineModel.transform(df)
+#df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
+
+query = prediction_df \
     .writeStream \
     .outputMode("append") \
     .format("console") \
     .start()
 
-##
-# Predict claps
-##
-modelPath = "./claps_model"
-
-loadedPipelineModel = PipelineModel.load(modelPath)
-df = loadedPipelineModel.transform(df)
-#df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
-
 ###
 # Write dataframe to hive
 ###
+df = df.drop("claps") \
+    .withColumn("id", str(uuid.uuid4())) \
+    .withColumn("prediction", prediction_df.prediction) \
+
 def processRow(d, epochId):
-    d.write.saveAsTable(name='articles', format='hive', mode='append')
+    d.write.saveAsTable(name='predictions', format='hive', mode='append')
 
 query = df \
     .writeStream \
@@ -87,12 +83,15 @@ query = df \
     .start() \
 
 ###
-# Write to console 
+# Write to kafka
 ###
+df = df.select("id", "prediction")
 query = df \
-    .writeStream \
-    .outputMode("append") \
-    .format("console") \
-    .start()
+  .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
+  .writeStream \
+  .format("kafka") \
+  .option("kafka.bootstrap.servers", "node-master:9092,node1:9092,node2:9092") \
+  .option("topic", "claps_predicted") \
+  .start()
 
 query.awaitTermination()
