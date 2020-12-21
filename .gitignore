@@ -1,0 +1,3 @@
+/processing/**/**.txt
+**/populate/data/
+**__pycache__
