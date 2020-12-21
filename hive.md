@@ -294,18 +294,24 @@ $ !connect jdbc:hive2://
 Hive url
 `http://localhost:9870/explorer.html#/user/hive/warehouse`
 
-Create table
-```
-CREATE TABLE IF NOT EXISTS articles ( id int, url String, title String, subtitle String, image String, claps int, responses int, reading_time int, publication int, date_str String, image_pixel_height int, image_pixel_width int, image_size int, image_average_pixel_color_r int, image_average_pixel_color_g int, image_average_pixel_color_b int, title_len int, title_words int, title_type_words int, title_key_words int, subtitle_len int, subtitle_words int, subtitle_type_words int, subtitle_key_words int)
-> ROW FORMAT DELIMITED
-> FIELDS TERMINATED BY '\t'
-> LINES TERMINATED BY '\n'
-> STORED AS TEXTFILE;
+### Create articles table in hive
+Header line is skipped in the following query
+```sql
+CREATE TABLE articles ( id int, url String, title String, subtitle String, image String, claps int, responses int, reading_time int, publication int, date_str String, image_pixel_height int, image_pixel_width int, image_size int, image_average_pixel_color_r int, image_average_pixel_color_g int, image_average_pixel_color_b int, title_len int, title_words int, title_type_words int, title_key_words int, subtitle_len int, subtitle_words int, subtitle_type_words int, subtitle_key_words int)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+tblproperties("skip.header.line.count"="1")
+;
 ```
 
-`!connect jdbc:hive2://node-master:2181,node1:2181,node2:2181;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2`
-
+### Load data from hdfs into hive table
+```
+beeline $ > load data inpath 'pre_data.csv' into table articles;
+```
+### Running java apps
 show running java apps `jps`
+### Kill hiveserver2 if its running as daemon
 kill java tasks `pkill -9 -f RunJar`
 
 ## References
