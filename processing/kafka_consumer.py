@@ -1,3 +1,7 @@
+###
+# Not used do to problems
+###
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import ArrayType, LongType, DoubleType, IntegerType, StringType, BooleanType, BinaryType, DateType
@@ -22,12 +26,6 @@ spark = SparkSession \
     .config("hive.metastore.uris", "thrift://node-master:9083,thrift://node1:9083,thrift://node2:9083") \
     .enableHiveSupport() \
     .getOrCreate()
-
-# Run without hive
-# spark = SparkSession \
-#     .builder \
-#     .appName("Real time Medium analyzer") \
-#     .getOrCreate()
 
 # Define the Schema
 schema = StructType([
@@ -73,7 +71,6 @@ modelPath = "./claps_model"
 
 loadedPipelineModel = PipelineModel.load(modelPath)
 df = loadedPipelineModel.transform(df)
-#df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
 
 ###
 # Write dataframe to hive

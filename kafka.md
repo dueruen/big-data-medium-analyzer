@@ -149,3 +149,21 @@ $ /opt/kafka/bin/kafka-topics.sh --list --zookeeper 0.0.0.0:2181
 $ sudo /opt/kafka/bin/kafka-server-stop.sh
 $ sudo /opt/kafka/bin/zookeeper-server-stop.sh
 ```
+
+# Topics needed for the system to work
+```bash
+$ /opt/kafka/bin/kafka-topics.sh \
+  --create \
+  --zookeeper master-node:2181,node1:2181,node2:2181 \
+  --replication-factor 2 \
+  --partitions 3 \
+  --topic claps_predicted
+```
+```bash
+$ /opt/kafka/bin/kafka-topics.sh \
+  --create \
+  --zookeeper master-node:2181,node1:2181,node2:2181 \
+  --replication-factor 2 \
+  --partitions 3 \
+  --topic predict_claps
+```

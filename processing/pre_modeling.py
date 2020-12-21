@@ -1,3 +1,7 @@
+###
+# Used to train the clap prediction model
+###
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import ArrayType, LongType, DoubleType, IntegerType, StringType, BooleanType, BinaryType, DateType
@@ -185,5 +189,5 @@ print(evaluator.evaluate(predictions,
    {evaluator.metricName: 'areaUnderPR'}))
 
 # Save model
-# modelPath = "./claps_model"
-# pipelineModel.write().overwrite().save(modelPath)
+modelPath = "./claps_model"
+pipelineModel.write().overwrite().save(modelPath)

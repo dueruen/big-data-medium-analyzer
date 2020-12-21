@@ -1,3 +1,7 @@
+###
+# Used to pre-process raw data
+###
+
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.types import ArrayType, LongType, DoubleType, IntegerType, StringType, BooleanType, BinaryType, DateType
@@ -22,8 +26,6 @@ def preprocess_image(base64_image):
     image_average_pixel_color = image.mean(axis=0).mean(axis=0)
 
     if not isinstance(image_average_pixel_color, np.ndarray):
-        print("HERE")
-        print(image_average_pixel_color)
         return False
 
     return (image_pixel_height, image_pixel_width, image_size, int(image_average_pixel_color[0]), int(image_average_pixel_color[1]), int(image_average_pixel_color[2]))

@@ -305,6 +305,11 @@ tblproperties("skip.header.line.count"="1")
 ;
 ```
 
+### Create stream_articles table in hive
+```sql
+CREATE TABLE IF NOT EXISTS stream_articles ( id String, title String, subtitle String, image String, reading_time int, publication_str String, image_pixel_height int, image_pixel_width int, image_size int, image_average_pixel_color_r int, image_average_pixel_color_g int, image_average_pixel_color_b int, title_len int, title_words int, title_type_words int, title_key_words int, subtitle_len int, subtitle_words int, subtitle_type_words int, subtitle_key_words int, prediction int) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' STORED AS TEXTFILE;
+```
+
 ### List port use
 `netstat -tulpn | grep LISTEN`
 

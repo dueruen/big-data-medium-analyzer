@@ -1,0 +1,281 @@
+
+After we have received this email, you will be assigned a Group#number, three virtual machines (nodes) with equal capacity and usernames and passwords for them.
+
+If your usernames are not “hadoop” on the three machines, you will need to create a user on the three nodes with username “hadoop” and a password agreed upon by all the group members.
+
+After you have been assigned a cluster, now you can begin to configure hadoop on your cluster as follows:
+
+On all nodes do this:
+	Edit the host file with the command: 
+		sudo vi /etc/hosts
+	
+	Create aliases for each of the three node as follows
+		NODE0_IP		node-master
+		NODE1_IP		node1
+		NODE2_IP		node2
+
+	exit the host file:
+
+	Use the following command to create a user:
+		sudo adduser Hadoop  
+		for example:
+			Username: hadoop
+			Password: hadoop12345
+
+	Add the “hadoop” user to sudoer group using the following command 
+		sudo user-mod -aG sudo hadoop
+
+	Generate an ssh key on all nodes as follows
+		ssh-keygen -b 4096 
+		cat .ssh/id_rsa.pub >> .ssh/authorized_keys
+		vi .ssh/authorized_keys
+
+	Distribute each ssh key to all hosts as follows:
+		Open the authorised keys on each node as follows: vi /home/hadoop/.ssh/authorized_keys
+		Distribute the each node’s key to the other nodes so that there are three keys on each node.
+
+On the node-master
+	Download Hadoop
+		cd
+		goto Hadoop project page and get link : Hadoop project page
+		wget [DOWNLOAD LINK]
+		tar -xzf hadoop-3.1.3.tar.gz
+		mv hadoop-3.1.3 hadoop
+
+
+On all nodes do this:
+	Open the .profile file:
+		vi /home/hadoop/.profile
+	Add the following to the .profile file:
+		#Data Science Course
+		PATH=/home/hadoop/hadoop/bin:/home/hadoop/hadoop/sbin:$PATH
+
+	Open the .bashrc file:
+		vi /home/hadoop/.bashrc
+	Add the following to the .bashrc file:	
+		#Data Science Course
+		export HADOOP_HOME=/home/hadoop/hadoop
+		export PATH=${PATH}:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin
+
+	Install java 8:
+		sudo apt-get update
+		sudo apt install openjdk-8-jdk
+
+On the node-master:
+	Update Hadoop-env.sh
+		cd
+		vi hadoop/etc/hadoop/hadoop-env.sh
+		export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+
+	Execute the update, write the following and press enter
+		bash
+
+	Copy the following to hadoop/etc/hadoop/core-site.xml to specify the property of the file system:
+
+<configuration>
+	<property>
+		<name>fs.default.name</name>
+    		<value>hdfs://node-master:9000</value>
+	</property>
+</configuration>
+
+	copy this to hadoop/etc/hadoop/hdfs-site.xml to specify the directory of the namenode, datanode and the replication of files in the file system.
+
+<configuration>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>/home/hadoop/data/nameNode</value>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>/home/hadoop/data/dataNode</value>
+	</property>
+	<property>
+    	    <name>dfs.replication</name>
+		<value>2</value>
+	</property>
+</configuration>
+
+	Copy this configurations to hadoop/etc/hadoop/mapred-site.xml 
+
+<configuration>
+    <property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>
+    </property>
+    <property>
+            <name>yarn.app.mapreduce.am.env</name>
+            <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+    </property>
+    <property>
+            <name>mapreduce.map.env</name>
+            <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+    </property>
+    <property>
+            <name>mapreduce.reduce.env</name>
+            <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>7168</value>
+	</property>
+
+	<property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>3584</value>
+	</property>
+
+	<property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>3584</value>
+	</property>
+</configuration>
+
+	Copy this to hadoop/etc/hadoop/yarn-site.xml 
+
+<configuration>
+    <property>
+            <name>yarn.acl.enable</name>
+            <value>0</value>
+    </property>
+
+    <property>
+            <name>yarn.resourcemanager.hostname</name>
+            <value>10.123.252.253</value>
+    </property>
+
+    <property>
+            <name>yarn.nodemanager.aux-services</name>
+            <value>mapreduce_shuffle</value>
+    </property>
+
+        <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>7168</value>
+	</property>
+
+	<property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>7168</value>
+	</property>
+
+	<property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>128</value>
+	</property>
+
+	<property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+	</property>
+
+</configuration>
+
+Copy this to hadoop/etc/hadoop/workers
+	node1
+	node2 
+
+Now we are almost done with the setup, however we need to copy the hadoop setup and configurations from the node-master to the other nodes as follows:
+
+	cd
+	scp -r /home/hadoop/hadoop  node1:/home/hadoop
+	scp -r /home/hadoop/hadoop  node2:/home/hadoop
+
+On the node-master, 
+	Execute the following command to format the file system and start the dfs:
+		cd
+		hadoop/bin/hdfs namenode -format
+		start-dfs.sh
+
+	You should see the following response
+		Starting namenodes on [node-master]
+		node-master: namenode is running as process 16802.  Stop it first.
+		Starting datanodes
+		node1: WARNING: /home/hadoop/hadoop/logs does not exist. Creating.
+		node2: WARNING: /home/hadoop/hadoop/logs does not exist. Creating.
+		Starting secondary namenodes [BDDST-Test-0]
+		BDDST-Test-0: secondarynamenode is running as process 17092.  Stop it first.
+
+
+Port forwarding
+
+You should be provided with some Port forwarding configurations
+	On your PC, open the .ssh/config file
+	Copy the provided configurations into it.
+
+If no configuration is provided, you can create it as follows:
+
+In the configuration, replace [NODE”X”_HOSTNAME or NODE”X”_IP] with the corresponding node_ip or hostname.
+
+Host node0
+  HostName [NODE0_HOSTNAME or NODE0_IP]
+  User admin
+  LocalForward 127.0.0.1:8088 [NODE0_HOSTNAME or NODE0_IP]:8088
+  LocalForward 127.0.0.1:9000 [NODE0_HOSTNAME or NODE0_IP]:9000
+  LocalForward 127.0.0.1:9868 [NODE0_HOSTNAME or NODE0_IP]:9868
+  LocalForward 127.0.0.1:9870 [NODE0_HOSTNAME or NODE0_IP]:9870
+  LocalForward 127.0.0.1:18080 [NODE0_HOSTNAME or NODE0_IP]:18080
+
+Host node1
+  HostName [NODE1_HOSTNAME or NODE1_IP]
+  User admin
+  LocalForward 127.0.0.1:19000 [NODE1_HOSTNAME or NODE1_IP]:9000
+  LocalForward 127.0.0.1:19868 [NODE1_HOSTNAME or NODE1_IP]:9868
+  LocalForward 127.0.0.1:19870 [NODE1_HOSTNAME or NODE1_IP]:9870
+
+Host node2
+  HostName [NODE2_HOSTNAME or NODE2_IP]
+  User admin
+  LocalForward 127.0.0.1:29000 [NODE2_HOSTNAME or NODE2_IP]:9000
+  LocalForward 127.0.0.1:29868 [NODE2_HOSTNAME or NODE2_IP]:9868
+  LocalForward 127.0.0.1:29870 [NODE2_HOSTNAME or NODE2_IP]:9870
+
+
+Now let’s have some fun by working with HDFS, YARN and running some mapReduce jobs on hadoop.
+
+Working with HDFS
+	Create Directory
+	hdfs dfs -mkdir -p /user/hadoop
+	hdfs dfs -mkdir books
+
+	get some books
+	wget -O alice.txt https://www.gutenberg.org/files/11/11-0.txt
+	wget -O holmes.txt https://www.gutenberg.org/files/1661/1661-0.txt
+	wget -O frankenstein.txt https://www.gutenberg.org/files/84/84-0.txt
+
+	put books in dfs	
+	hdfs dfs -put alice.txt holmes.txt frankenstein.txt books
+
+	list books
+	hdfs dfs -ls books
+
+	View the web-interface of Hadoop:
+	http://node-master:9870/
+
+	help 
+	hdfs dfs -help
+
+Working with Yarn
+	Start Yarn
+		start-yarn.sh
+		yarn node -list
+
+	View the web-interface of Yarn:
+	http://node-master:8088/cluster
+
+View processes
+	sudo jps
+	
+
+Submit a MapReduce job to Yarn
+	yarn jar ~/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount "books/*" output
+
+	View your running Job on Yarn:
+	http://node-master:8088/cluster
+	
+Read out the output file
+	hdfs dfs -cat output/part-r-00000 | less
+
+
+
+	

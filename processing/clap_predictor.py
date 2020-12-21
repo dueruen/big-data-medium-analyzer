@@ -13,7 +13,7 @@ import pipelines
 
 # Config
 bootstrap_servers = "node-master:9092,node1:9092,node2:9092"
-kafka_topic_name = "test_json"
+kafka_topic_name = "predict_claps"
 
 # Make a Spark Session
 spark = SparkSession \
@@ -58,10 +58,10 @@ df = df.withColumn("claps", lit(1))
 modelPath = "./claps_model"
 
 loadedPipelineModel = PipelineModel.load(modelPath)
-prediction_df = loadedPipelineModel.transform(df)
+df = loadedPipelineModel.transform(df)
 #df.select('claps', 'features',  'rawPrediction', 'prediction', 'probability').show()
 
-query = prediction_df \
+query = df \
     .writeStream \
     .outputMode("append") \
     .format("console") \
@@ -70,12 +70,18 @@ query = prediction_df \
 ###
 # Write dataframe to hive
 ###
-df = df.drop("claps") \
-    .withColumn("id", str(uuid.uuid4())) \
-    .withColumn("prediction", prediction_df.prediction) \
+df = df.drop("claps", "publication_strIndex", "publication_strclassVec", "vectorized_features", "features", "rawPrediction", "probability") \
+    .withColumn("id", lit(str(uuid.uuid4())))
+    #.withColumn("prediction", prediction_df.prediction) \
+
+query = df \
+    .writeStream \
+    .outputMode("append") \
+    .format("console") \
+    .start()
 
 def processRow(d, epochId):
-    d.write.saveAsTable(name='predictions', format='hive', mode='append')
+    d.write.saveAsTable(name='stream_articles', format='hive', mode='append')
 
 query = df \
     .writeStream \
@@ -87,10 +93,11 @@ query = df \
 ###
 df = df.select("id", "prediction")
 query = df \
-  .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)") \
+  .selectExpr("CAST(id AS STRING) AS key", "to_json(struct(*)) AS value") \
   .writeStream \
   .format("kafka") \
-  .option("kafka.bootstrap.servers", "node-master:9092,node1:9092,node2:9092") \
+  .option("kafka.bootstrap.servers", bootstrap_servers) \
+  .option("checkpointLocation", "/tmp/claps/checkpoint") \
   .option("topic", "claps_predicted") \
   .start()
 

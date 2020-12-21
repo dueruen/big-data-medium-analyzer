@@ -21,13 +21,13 @@ def readFile(filePath):
     return b64_bytes.decode()
 
 count = 0
-with open('data/working_medium_data.csv', newline='') as csvfile:
+with open('data/working_medium_data_v2.csv', newline='') as csvfile:
   spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
   for row in spamreader:
     if count == 0:
       count += 1
       continue
-    
+
     # Wrong row length
     if len(row) != 10:
       continue
@@ -37,25 +37,26 @@ with open('data/working_medium_data.csv', newline='') as csvfile:
       continue
 
     b64_string = readFile(f'./data/images/{row[4]}')
-    print(b64_string)
+    # print(b64_string)
 
     data_set = {
-      "id": row[0], 
-      "url": row[1], 
-      "title": row[2], 
-      "subtitle": row[3], 
-      "image": "b64_string",
-      "claps": row[5], 
-      "responses": row[6], 
-      "reading_time": row[7], 
-      "publication": row[8], 
+      "id": int(float(row[0])),
+      "url": row[1],
+      "title": row[2],
+      "subtitle": row[3],
+      "image": b64_string,
+      "claps": int(float(row[5])),
+      "responses": int(float(row[6])),
+      "reading_time": int(float(row[7])),
+      "publication": row[8],
       "date": row[9]}
-    
-    json_dump = json.dumps(data_set)
-    print(json_dump)
 
-    with topic.get_sync_producer(max_request_size = 15728640) as producer:
-      producer.produce(bytes(json_dump, data_encoding))
-    count+= 1 
-    # if count == 2:
-    #   break
+    json_dump = json.dumps(data_set)
+    print(row[0])
+    count+= 1
+
+    with topic.get_producer(max_request_size = 15728640, delivery_reports=False, linger_ms=0) as producer:
+        producer.produce(bytes(json_dump, data_encoding))
+
+  #  if count > 7 :
+  #    break

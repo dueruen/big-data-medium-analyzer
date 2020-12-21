@@ -1,0 +1,59 @@
+On the node-master
+	Download Spark 2.4.6-bin-hadoop2.7
+		Goto the Apache Spark download page and copy the DOWNLOAD LINK to Spark 2.4.6-bin-hadoop2.7
+		wget [DOWNLOAD LINK]
+		tar -xvf spark-2.4.6-bin-hadoop2.7.tgz
+		mv spark-2.4.6-bin-hadoop2.7 spark
+
+	Add spark to PATH
+		Edit the .profile file
+			vi /home/hadoop/.profile
+		Add the following
+			PATH=/home/hadoop/spark/bin:$PATH
+
+	Integrate Spark with YARN
+		Edit the .profile file
+			vi /home/hadoop/.profile
+		add the following
+			export HADOOP_CONF_DIR=/home/hadoop/hadoop/etc/hadoop
+			export SPARK_HOME=/home/hadoop/spark
+			export LD_LIBRARY_PATH=/home/hadoop/hadoop/lib/native:$LD_LIBRARY_PATH
+
+	Restart Session
+		Source .profile
+
+	Rename the Spark default template config file:
+		cp /home/hadoop/spark/conf/spark-defaults.conf.template /home/hadoop/spark/conf/spark-defaults.conf 
+
+	Edit the spark default template as follows
+	
+		#Add the following to run spark on yarn
+			spark.master                            yarn
+
+		#Configure Memory Allocation
+			spark.driver.memory                     512m
+			spark.yarn.am.memory                    512m
+			spark.executor.memory                   6144m
+
+		#Monitor Spark Application
+			spark.eventLog.enabled                  true
+			spark.eventLog.dir                      hdfs://node-master:9000/spark-logs
+			spark.history.provider       		org.apache.spark.deploy.history.FsHistoryProvider
+			spark.history.fs.logDirectory           hdfs://node-master:9000/spark-logs
+			spark.history.fs.update.interval        10s
+			spark.history.ui.port                   18080
+
+		#OPTIONAL
+			#Create directory on hdfs
+				hdfs dfs -mkdir /spark
+				hdfs dfs -mkdir /spark/jars
+
+			#Copy spark jars into HDFS
+				hdfs dfs -put /home/hadoop/spark/jars/* /spark/jars
+
+			#Add the following config to spark default
+				spark.yarn.jars					hdfs://node-master:9000/spark/jars/*	
+
+	Submit a Spark job to Yarn
+		spark-submit --deploy-mode client --class org.apache.spark.examples.SparkPi /home/hadoop/spark/examples/jars/spark-examples_2.11-2.4.6.jar 10
+
