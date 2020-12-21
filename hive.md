@@ -333,3 +333,4 @@ kill java tasks `pkill -9 -f RunJar`
 - https://dzone.com/articles/how-configure-mysql-metastore 
 - https://medium.com/@divingwai/installing-hive-with-external-mysql-58a958ff1692
 - https://phoenixnap.com/kb/install-hive-on-ubuntu
+- https://data-flair.training/blogs/apache-hive-partitions/
